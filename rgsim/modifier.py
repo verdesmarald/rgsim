@@ -3,8 +3,7 @@ from __future__ import annotations
 from enum import Enum, auto
 from dataclasses import dataclass
 from decimal import Decimal
-from numbers import Rational
-from typing import Any, Dict, Callable, Generic, Optional, Protocol, TypeVar, Union, TYPE_CHECKING
+from typing import Any, Dict, Generic, Optional, Protocol, TypeVar, Union, TYPE_CHECKING
 
 import building
 from faction import Alignment
@@ -87,8 +86,8 @@ def alignment_filter(*alignments: Alignment) -> FilterCallback:
     return f
 
 
-def building_filter(*buildings: building.BuildingId) -> FilterCallback:
+def building_filter(*building_ids: int) -> FilterCallback:
     def f(_state: sim.GameState, target: building.Building) -> bool:
-        return target.uid in buildings
+        return target.uid in building_ids
 
     return f

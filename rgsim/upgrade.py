@@ -3,11 +3,11 @@ from __future__ import annotations
 from enum import Enum, auto
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any, Callable, Dict, Iterable, List, TYPE_CHECKING
+from typing import Callable, Dict, Iterable, List, TYPE_CHECKING
 
-from building import BuildingId
 from faction import Alignment
 
+import building
 import modifier
 
 if TYPE_CHECKING:
@@ -213,7 +213,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(2),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
         .add_modifier(modifier.additive(modifier.Target.ASSISTANTS, modifier.fixed(1)))
@@ -223,7 +223,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(3),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
         .add_modifier(modifier.additive(modifier.Target.ASSISTANTS, modifier.fixed(1)))
@@ -233,7 +233,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(4),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -242,7 +242,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -251,7 +251,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(6),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -260,7 +260,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -269,7 +269,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(4),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -278,7 +278,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(3),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -287,7 +287,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(2),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -296,7 +296,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(3),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -305,7 +305,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(4),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -314,7 +314,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -323,7 +323,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(6),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -332,7 +332,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -341,7 +341,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(4),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -350,7 +350,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -359,7 +359,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(6),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -368,7 +368,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(5),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     ,
@@ -377,7 +377,7 @@ _ALL_UPGRADES: Dict[UpgradeId, Upgrade] = { u.uid: u for u in [
             modifier.multiplicative(
                 modifier.Target.BUILDING_PRODUCTION,
                 modifier.fixed(4),
-                modifier.building_filter(BuildingId.FARM)
+                modifier.building_filter(building.FARM.uid)
             )
         )
     #endregion

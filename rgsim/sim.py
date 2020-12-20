@@ -4,7 +4,7 @@ from decimal import Decimal
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from building import Building, BuildingId
+import building
 import modifier
 from upgrade import Upgrade, UpgradeId
 
@@ -16,7 +16,7 @@ _DEFAULT_MODIFIERS = [
     modifier.multiplicative(
         modifier.Target.BUILDING_PRODUCTION,
         lambda state, _target: state.trophies,
-        modifier.building_filter(BuildingId.HALL_OF_LEGENDS),
+        modifier.building_filter(building.HALL_OF_LEGENDS.uid),
         uid="default.holMultiplier"
     )
 ]
@@ -30,7 +30,7 @@ class UpgradeState:
 
 @dataclass
 class BuildingState:
-    building: Building
+    building: building.Building
     owned: Decimal = Decimal(0)
 
 
@@ -43,8 +43,8 @@ class GameState:
     treasury: Decimal = Decimal(0)
     excavations: Decimal = Decimal(0)
 
-    buildings: Dict[BuildingId, BuildingState] = field(default_factory=lambda: {
-        b.uid: BuildingState(b) for b in Building.all()
+    buildings: Dict[int, BuildingState] = field(default_factory=lambda: {
+        b.uid: BuildingState(b) for b in building.all()
     })
     upgrades: Dict[UpgradeId, UpgradeState] = field(default_factory=lambda: {
         u.uid: UpgradeState(u) for u in Upgrade.all()
@@ -55,7 +55,7 @@ class GameState:
         }
     )
 
-    def purchase_building(self, building_id: BuildingId, quantity: Decimal) -> GameState:
+    def purchase_building(self, building_id: int, quantity: Decimal) -> GameState:
         self.buildings[building_id].owned += quantity
 
         return self
@@ -143,7 +143,7 @@ class GameState:
 
 
 if __name__ == '__main__':
-    state = GameState().purchase_building(BuildingId.FARM, Decimal(12))
+    state = GameState().purchase_building(building.FARM.uid, Decimal(12))
     print(state.calculate_building_production())
     state.purchase_upgrade(UpgradeId.CROP_ROTATION)
     print(state.calculate_building_production())
@@ -152,6 +152,6 @@ if __name__ == '__main__':
     state.unpurchase_upgrade(UpgradeId.CROP_ROTATION)
     print(state.calculate_building_production())
     state \
-        .purchase_building(BuildingId.FARM, Decimal(10)) \
-        .purchase_building(BuildingId.INN, Decimal(10))
+        .purchase_building(building.FARM.uid, Decimal(10)) \
+        .purchase_building(building.INN.uid, Decimal(10))
     print(state.calculate_building_production())
