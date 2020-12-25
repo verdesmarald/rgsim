@@ -1,30 +1,28 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from dataclasses import dataclass, field
+from dataclasses import dataclass, replace, field
 from typing import Any, Dict
 
-import building
-import modifier
-from upgrade import Upgrade, UpgradeId
+from . import filters
+from .entities import building, modifier, upgrade
 
 
 _DEFAULT_MODIFIERS = [
-    modifier.additive(modifier.Target.CLICK_REWARD, modifier.fixed(1), uid='default.click'),
-    modifier.additive(modifier.Target.MAX_MANA, modifier.fixed(1000), uid='default.mana'),
-    modifier.additive(modifier.Target.MANA_REGEN, modifier.fixed(1), uid='default.manaRegen'),
+    modifier.additive(modifier.Target.CLICK_REWARD, modifier.fixed(1)),
+    modifier.additive(modifier.Target.MAX_MANA, modifier.fixed(1000)),
+    modifier.additive(modifier.Target.MANA_REGEN, modifier.fixed(1)),
     modifier.multiplicative(
         modifier.Target.BUILDING_PRODUCTION,
         lambda state, _target: state.trophies,
-        modifier.building_filter(building.HALL_OF_LEGENDS.uid),
-        uid="default.holMultiplier"
+        filters.building(building.HALL_OF_LEGENDS)
     )
 ]
 
 
 @dataclass
 class UpgradeState:
-    upgrade: Upgrade
+    upgrade: upgrade.Upgrade
     purchased: bool = False
 
 
@@ -34,37 +32,36 @@ class BuildingState:
     owned: Decimal = Decimal(0)
 
 
-@dataclass
+@dataclass(frozen=True)
 class GameState:
-    mana: Decimal = Decimal(0)
+    mana: Decimal = Decimal(1000)
     gold: Decimal = Decimal(0)
     gems: Decimal = Decimal(0)
     trophies: Decimal = Decimal(0)
     treasury: Decimal = Decimal(0)
     excavations: Decimal = Decimal(0)
 
-    buildings: Dict[int, BuildingState] = field(default_factory=lambda: {
-        b.uid: BuildingState(b) for b in building.all()
+    buildings: Dict[building.BuildingId, BuildingState] = field(default_factory=lambda: {
+        b.id_: BuildingState(b) for b in building.all()
     })
-    upgrades: Dict[UpgradeId, UpgradeState] = field(default_factory=lambda: {
-        u.uid: UpgradeState(u) for u in Upgrade.all()
+    upgrades: Dict[upgrade.UpgradeId, UpgradeState] = field(default_factory=lambda: {
+        u.id_: UpgradeState(u) for u in upgrade.all()
     })
-    modifiers: Dict[modifier.Strategy, Dict[modifier.Target, Dict[str, modifier.Modifier]]] = field(
+    modifiers: Dict[modifier.Strategy, Dict[modifier.Target, Dict[int, modifier.Modifier]]] = field(
         default_factory=lambda: {
             m.strategy : {m.target : {m.uid: m}} for m in _DEFAULT_MODIFIERS
         }
     )
 
-    def purchase_building(self, building_id: int, quantity: Decimal) -> GameState:
+    def purchase_building(self, building_id: building.BuildingId, quantity: Decimal) -> GameState:
         self.buildings[building_id].owned += quantity
 
         return self
 
-    def purchase_upgrade(self, upgrade_id: UpgradeId, spend_gold: bool = False) -> GameState:
-        if not self.upgrades[upgrade_id].purchased:
-            self.upgrades[upgrade_id].purchased = True
+    def purchase_upgrade(self, upgrade: upgrade.Upgrade, spend_gold: bool = False) -> GameState:
+        if not self.upgrades[upgrade.id_].purchased:
+            self.upgrades[upgrade.id_].purchased = True
 
-            upgrade = Upgrade.get_by_id(upgrade_id)
             for modifier in upgrade.effects:
                 self.register_modifier(modifier)
 
@@ -73,11 +70,10 @@ class GameState:
 
         return self
 
-    def unpurchase_upgrade(self, upgrade_id: UpgradeId, credit_gold: bool = False) -> GameState:
-        if self.upgrades[upgrade_id].purchased:
-            self.upgrades[upgrade_id].purchased = False
+    def unpurchase_upgrade(self, upgrade: upgrade.Upgrade, credit_gold: bool = False) -> GameState:
+        if self.upgrades[upgrade.id_].purchased:
+            self.upgrades[upgrade.id_].purchased = False
 
-            upgrade = Upgrade.get_by_id(upgrade_id)
             for modifier in upgrade.effects:
                 self.deregister_modifier(modifier)
 
@@ -87,18 +83,18 @@ class GameState:
         return self
 
     def register_modifier(self, modifier: modifier.Modifier) -> GameState:
-        self.modifiers \
-            .setdefault(modifier.strategy, {}) \
-            .setdefault(modifier.target, {}) \
-            [modifier.uid] = modifier
+        (self.modifiers
+            .setdefault(modifier.strategy, {})
+            .setdefault(modifier.target, {})
+        )[modifier.uid] = modifier
 
         return self
 
     def deregister_modifier(self, modifier: modifier.Modifier) -> GameState:
-        self.modifiers \
-            .setdefault(modifier.strategy, {}) \
-            .setdefault(modifier.target, {}) \
-            .pop(modifier.uid, None)
+        (self.modifiers
+            .setdefault(modifier.strategy, {})
+            .setdefault(modifier.target, {})
+        ).pop(modifier.uid, None)
 
         return self
 
@@ -143,15 +139,15 @@ class GameState:
 
 
 if __name__ == '__main__':
-    state = GameState().purchase_building(building.FARM.uid, Decimal(12))
+    state = GameState().purchase_building(building.FARM.id_, Decimal(12))
     print(state.calculate_building_production())
-    state.purchase_upgrade(UpgradeId.CROP_ROTATION)
+    state.purchase_upgrade(upgrade.CROP_ROTATION)
     print(state.calculate_building_production())
-    state.purchase_upgrade(UpgradeId.IRRIGATION)
+    state.purchase_upgrade(upgrade.IRRIGATION)
     print(state.calculate_building_production())
-    state.unpurchase_upgrade(UpgradeId.CROP_ROTATION)
+    state.unpurchase_upgrade(upgrade.CROP_ROTATION)
     print(state.calculate_building_production())
     state \
-        .purchase_building(building.FARM.uid, Decimal(10)) \
-        .purchase_building(building.INN.uid, Decimal(10))
+        .purchase_building(building.FARM.id_, Decimal(10)) \
+        .purchase_building(building.INN.id_, Decimal(10))
     print(state.calculate_building_production())

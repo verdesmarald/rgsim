@@ -1,0 +1,4 @@
+Py3AMF
+dataclass-builder
+wxPython
+watchdog

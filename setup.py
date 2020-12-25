@@ -9,5 +9,9 @@ setup(
     author='James Bungard',
     author_email='jmbungard@gmail.com',
     url='https://www.github.com/repos/verdesmarald/rgsim',
-    packages=['rgsim']
+    packages=['rgsim'],
+    zip_safe=False,
+    entry_points = {
+        'console_scripts': ['rgsim=rgsim.gui.app:main'],
+    }
 )
